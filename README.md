@@ -4,6 +4,12 @@ This is a project implementing controllable Christmas lights. Inspired by Matt P
 (<https://www.youtube.com/watch?v=TvlpIojusBE>), this repo includes code to measure the 3D coordinates of the addressable
 RGB LED Christmas lights and to display various effects using the calculated coordinates.
 
+In this repo, you can find code that allows you to:
+
+- capture and calculate the 3D coordinates of each LED
+- run effect simulations - this way, even before you hook up the lights, you can start developing effects in advance
+- run the actual effects using a Raspberry Pi
+
 <img src="./assets/colored_wave.gif" width="150" height="auto"/> <img src="./assets/expanding_sphere.gif" width="150" height="auto"/> <img src="./assets/planar_wave.gif" width="150" height="auto"/>
 
 <img src="./assets/rain.gif" width="150" height="auto"/> <img src="./assets/rotating_quadrants.gif" width="150" height="auto"/> <img src="./assets/xz_wedge.gif" width="150" height="auto"/>
@@ -12,7 +18,6 @@ RGB LED Christmas lights and to display various effects using the calculated coo
 - [Setup](#setup)
     - [Settings](#settings)
     - [Wiring](#wiring)
-- [Features](#features)
 - [3D Coordinate capturing/calculation](#3d-coordinate-capturing-and-calculation)
     - [Theory](#theory)
     - [Practice](#practice)
@@ -56,14 +61,6 @@ Also, I had to power the LED chain in multiple places for the LED brightness/col
 I used the `D21` GPIO pin for the LED data channel, if that does not work for you try the other pins.
 
 <img src="./assets/circuit.png" width="310" height="auto"/>
-
-## Features
-
-In this repo, you can find code that allows you to:
-
-- capture and calculate the 3D coordinates of each LED
-- run effect simulations - this way, even before you hook up the lights on a tree you can start developing effects in advance
-- run the actual effects using a Raspberry Pi
 
 ## 3D Coordinate Capturing and Calculation
 
