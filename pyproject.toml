@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "christmas-tree"
+version = "0.1.0"
+description = ""
+authors = ["Asa-Nisi-Masa <john@example.com>"]
+readme = "README.md"
+packages = [{include = "christmas_tree"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.group.calculations]
+optional = true
+
+[tool.poetry.group.camera]
+optional = true
+
+[tool.poetry.group.rpi]
+optional = true
+
+[tool.poetry.group.calculations.dependencies]
+opencv-python = "^4.8.1.78"
+requests = "^2.31.0"
+pythreejs = "^2.4.2"
+ipywidgets = "^8.1.1"
+ipython = "8.12.3"
+ipykernel = "^6.28.0"
+tqdm = "^4.66.1"
+
+[tool.poetry.group.camera.dependencies]
+opencv-python = "^4.8.1.78"
+requests = "^2.31.0"
+
+[tool.poetry.group.rpi.dependencies]
+adafruit-circuitpython-neopixel = "6.3.9"
+Flask = "3.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 109
+
+[tool.isort]
+profile = "black"
