@@ -41,12 +41,12 @@ split into three groups:
 effect simulations
 - `rpi` - dependencies related to displaying the effects using the Raspberry Pi ('prod' usage)
 
-Note that on the Raspberry Pi you might need to install the dependencies with `sudo`, which means that Poetry might not be usable
+To install a specific dependency group run `poetry install --with <group>`. For example, to install the dependencies for capturing the LEDs
+as frames, run `poetry install --with camera`
+
+Note that on the Raspberry Pi you might need to install the dependencies with `sudo`, which means that Poetry might not be usable on the Pi
 (this happened to me). For this, you can use the `requirements.txt` file under `christmas_tree/rpi` to install the Raspberry Pi
 dependencies.
-
-To install a specific dependency group run `poetry install --with <group>`. For example, to install the dependencies for capturing the LEDs
-as frames, run `poetry install --with camera`.
 
 ### Settings
 
