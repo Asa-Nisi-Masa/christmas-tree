@@ -1,3 +1,4 @@
+import sys
 import board
 import neopixel
 from flask import Flask, jsonify, render_template, request
@@ -12,9 +13,9 @@ pixels = neopixel.NeoPixel(board.D21, TOTAL_LEDS, auto_write=False, pixel_order=
 pixels.fill((0, 0, 0))
 pixels.show()
 
-coords = load_coordinates(PATH_SAVE)
-
-light_show = LightShow(pixels, coords)
+if len(sys.argv) == 1:
+    coords = load_coordinates(PATH_SAVE)
+    light_show = LightShow(pixels, coords)
 
 app = Flask(__name__)
 
@@ -61,11 +62,15 @@ def clear():
 
 @app.route("/fill", methods=["POST"])
 def fill():
-    pixels.fill((255, 255, 255))
+    pixels.fill((16, 16, 16))
     pixels.show()
 
     return "", 204
 
 
 if __name__ == "__main__":
-    app.run("0.0.0.0", port=5000)
+    try:
+        app.run("0.0.0.0", port=5000)
+    except KeyboardInterrupt:
+        pixels.fill((0, 0, 0))
+        pixels.show()

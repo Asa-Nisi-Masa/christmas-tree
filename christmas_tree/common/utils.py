@@ -56,7 +56,7 @@ def block_execution():
 
 def load_coordinates(path: str) -> Dict[int, Tuple[float]]:
     with open(path, "r") as file:
-        raw = file.read().split("\n")[:-1]
+        raw = file.read().splitlines()[:-1]
 
     coords = {}
     for line in raw:
