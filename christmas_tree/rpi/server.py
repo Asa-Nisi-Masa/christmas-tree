@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 import board
 import neopixel
 from flask import Flask, jsonify, render_template, request
@@ -13,7 +14,9 @@ pixels = neopixel.NeoPixel(board.D21, TOTAL_LEDS, auto_write=False, pixel_order=
 pixels.fill((0, 0, 0))
 pixels.show()
 
-if len(sys.argv) == 1:
+if not Path(PATH_SAVE).exists():
+    print(f"Couldn't find {PATH_SAVE} - server will be started for the initial coordinate capturing")
+else:
     coords = load_coordinates(PATH_SAVE)
     light_show = LightShow(pixels, coords)
 
@@ -72,5 +75,8 @@ if __name__ == "__main__":
     try:
         app.run("0.0.0.0", port=5000)
     except KeyboardInterrupt:
+        pass
+    finally:
         pixels.fill((0, 0, 0))
         pixels.show()
+
