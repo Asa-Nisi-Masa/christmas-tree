@@ -18,17 +18,16 @@ In this repo, you can find code that allows you to:
 - [Setup](#setup)
     - [Settings](#settings)
     - [Wiring](#wiring)
-- [3D Coordinate capturing/calculation](#3d-coordinate-capturing-and-calculation)
+- [3D Coordinate Capturing/Calculation](#3d-coordinate-capturing-and-calculation)
     - [Theory](#theory)
     - [Practice](#practice)
+    - [Capturing the Images](#capturing-the-images)
+    - [Calculating the 3D Coordinates](#calculating-the-3d-coordinates)
 - [Writing Effects](#writing-effects)
     - [Static Effects](#static-effects)
-- [Simulating Effects](#simulating-effects)
 - [Running Effects](#running-effects)
-- [Intended Workflow](#intended-workflow)
-    - [Capturing the images](#capturing-the-images)
-    - [Calculating the 3D coordinates](#calculating-the-3d-coordinates)
-    - [Running the server](#running-the-server)
+- [Running the Server](#running-the-server)
+- [Simulating Effects](#simulating-effects)
 
 
 ## Setup
@@ -51,11 +50,11 @@ dependencies.
 ### Settings
 
 A global settings module can be found at `christmas_tree.common.settings` - update the number LEDs and the (local) IP of your
-Raspberry Pi inside there.
+Raspberry Pi (if you want to run the server) inside there.
 
 ### Wiring
 
-See my wiring in the image below. What's important is to not power the LEDs from the Raspberry Pi but to have a dedicated power supply.
+See my wiring in the sketch below. What's important is to not power the LEDs from the Raspberry Pi but to have a dedicated power supply.
 Also, I had to power the LED chain in multiple places for the LED brightness/color not to fall off too much due to internal resistance.
 
 I used the `D21` GPIO pin for the LED data channel, if that does not work for you try the other pins.
@@ -64,13 +63,11 @@ I used the `D21` GPIO pin for the LED data channel, if that does not work for yo
 
 ## 3D Coordinate Capturing and Calculation
 
-To display effects on the Christmas tree, we need to compute/approximate the 3D coordinates of each LED. The idea is that
-we can capture an image for each LED lit up in isolation - in my case of 500 LEDs this will generate 500 images. However,
-capturing the images from one direction means that some LEDs will be obstructed (not visible), also, the depth dimension is lost.
+To display effects on the Christmas tree, we need to compute/approximate the 3D coordinates of each LED. The idea is to capture an image of each LED from different angles. The more angles, the better the approximation.
 
 ### Theory
 
-To get a better approximation of the coordinates we repeat the image capturing from multiple angles. If, for each LED, we
+To get a good of the LED coordinates we repeat the image capturing from multiple angles. If, for each LED, we
 capture the LED from `N` different angles, and measure where in each frame the LED appears, we can approximate the LED's
 x, y and z coordinates with:
 
@@ -86,19 +83,64 @@ z = \frac{1}{N}\sum_{n=1}^{N} u_n\dot\sin\Theta_n
 
 here, $\Theta$ is the angle at which an LED was captured, $u$ is the horizontal and $v$ is the vertical coordinate of the LED
 as it appears in the frame. Note that $u$ and $v$ should be in the real number (not pixel) space, where the origin is the center
-of the frame (as opposed to the top-left or top-right corner as is usual in computer graphics).
+of the frame (as opposed to the top-left or bottom-right corner as is usual in computer graphics).
 
 ### Practice
 
-What worked in my case is setting up the camera (laptop) in one place and adding four markers around the base of the
-Christmas tree in 90 degree increments. This way you can capture the LEDs from 8 positions (N, W, S, E, NW, SW, SE, NE)
+What worked in my case is setting up the camera (laptop) in one place and adding eight markers around the base of the
+Christmas tree in 45 degree increments. This way you can capture the LEDs from 8 positions (N, W, S, E, NW, SW, SE, NE)
 by rotating the tree.
 
-## Writing effects
+### Capturing the Images
+
+With the Christmas lights on the tree and camera set up, calibrate/tilt the camera so that the center of the frame aligns
+with the center of the tree:
+
+```bash
+poetry run python3 -m christmas_tree.camera.calibrate
+```
+
+Start the server on your Raspberry Pi with
+
+```bash
+sudo python3 -m christmas_tree.rpi.server
+```
+
+and update the Pi's local network IP in the `christmas_tree.camera.capture_frames` module.
+
+When ready, turn off the lights and capture the first set of images for the angle of 0 degrees (using your laptop/webcam driver):
+
+```bash
+poetry run python3 -m christmas_tree.camera.capture_frames 0
+```
+
+Rotate the tree by X degrees (from the initial orientation) and repeat the same:
+
+```bash
+poetry run python3 -m christmas_tree.camera.capture_frames X
+```
+
+Repeat the process for multiple angles (in my case 0, 45, 90, ..., 315) worked quite well.
+
+### Calculating the 3D Coordinates
+
+Calculate the coordinates from the frames captured with
+
+```bash
+poetry run python3 -m christmas_tree.calculations.compute_coords
+```
+
+The script will inform you if there are any LEDs whose positions could not be determined. If that happens, play around
+with the parameters at the top of the script.
+A few 'bad' LEDs usually won't be noticeable.
+
+The script will generate a `coordinates.csv` file at the root of the repo.
+
+## Writing Effects
 
 Effects are Python functions decorated with an `@effect` decorator. The decorator accepts an optional effect name (for displaying in the web UI).
 
-The effect functions should accept two parameters - `pixels` and `coords`. The `pixels` arguments is the `neopixel.NeoPixel` object and holds the RGB values of every LED - `i`-th LED's color is `pixels[i]`. `coords` are the coordinates of the LEDs as a dict - the `i`-th LED's x, y, z coordinates are `coords[i]`.
+The effect functions should accept two parameters - `pixels` and `coords`. The `pixels` arguments is the `neopixel.NeoPixel` object and holds the RGB values of every LED - `i`-th LED's color is `pixels[i]`. `coords` are the coordinates of the LEDs as a `dict` - the `i`-th LED's `(x, y, z)` coordinates are `coords[i]`.
 
 Here is an example effect which creates a sphere expanding and shrinking continuously.
 
@@ -122,23 +164,11 @@ def expanding_ball(pixels, coords):
         time.sleep(0.01)
 ```
 
-### Static effects
+### Static Effects
 
 Due to implementation reasons, effects that don't have an infinite loop running, should have a blocking call inside them. See examples, e.g. `christmas_tree.common.effects.ua_flag`.
 
-## Simulating effects
-
-<img src="./assets/tree.gif" width="200" height="400"/> <img src="./assets//simulation.gif" width="300" height="400"/> 
-
-Effect simulation can be useful if you don't have the Christmas lights set up yet but want to start working on the effects.
-This repo provides a way to simulate the effects by utilizing Three.js bindings for Python under-the-hood.
-Long story short, effects written for the simulated lights can be used as-is with the real Christmas lights. The logic will
-stay the same and you won't have to do any refactoring when moving from the simulated to the real tree.
-
-See an example here: <https://github.com/Asa-Nisi-Masa/christmas-tree/blob/master/christmas_tree/calculations/simulation.ipynb>
-
-
-## Running effects
+## Running Effects
 
 Effects can be run from a script with, for example:
 
@@ -163,52 +193,7 @@ or by making requests to a web server. A Flask server is included which allows y
 select one or more effect to be displayed. If one effect is selected, it will run indefinitely. If multiple effects are
 selected, they will be cycled-through indefinitely, with each of them being shown for some duration (see [Running the server](#running-the-server) below).
 
-
-## Intended Workflow
-
-### Capturing the images
-
-With the Christmas lights on the tree and camera set up, calibrate/tilt the camera so that the center of the frame aligns
-with the center of the tree:
-
-```bash
-poetry run python3 -m christmas_tree.camera.calibrate
-```
-
-Start the server on your Raspberry Pi with
-
-```bash
-sudo python3 -m christmas_tree.rpi.server
-```
-
-and update the Pi's local network URL in the `christmas_tree.camera.capture_frames` module.
-
-When ready, turn off the lights and capture the first set of images for the angle of 0 degrees (using your laptop/webcam driver):
-
-```bash
-poetry run python3 -m christmas_tree.camera.capture_frames 0
-```
-
-Rotate the tree by X degrees (from the initial orientation) and repeat the same:
-
-```bash
-poetry run python3 -m christmas_tree.camera.capture_frames X
-```
-
-Repeat the process for multiple angles.
-
-### Calculating the 3D coordinates
-
-Calculate the coordinates from the frames captured with
-
-```bash
-poetry run python3 -m christmas_tree.calculations.compute_coords
-```
-
-The script will inform you if there are any LEDs whose positions could not be determined. If that happens, play around
-with the parameters at the top of the script. The script will generate a `coordinates.csv` file at the root of the repo.
-
-### Running the server
+## Running the Server
 
 On your Raspberry Pi, run
 
@@ -217,3 +202,14 @@ sudo python3 -m christmas_tree.rpi.server
 ```
 
 then visit <http://0.0.0.0:5000/> on your local computer, select the effects you want to be shown and click `Submit`.
+
+## Simulating Effects
+
+<img src="./assets/tree.gif" width="200" height="400"/> <img src="./assets//simulation.gif" width="300" height="400"/> 
+
+Effect simulation can be useful if you don't have the Christmas lights set up yet but want to start working on the effects.
+This repo provides a way to simulate the effects by utilizing Three.js bindings for Python.
+
+Effects written for the simulated lights can be used as-is with the real lights.
+
+See an example here: <https://github.com/Asa-Nisi-Masa/christmas-tree/blob/master/christmas_tree/calculations/simulation.ipynb>

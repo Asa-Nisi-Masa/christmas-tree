@@ -48,7 +48,7 @@ def effect(_func: Optional[Callable] = None, *, name: Optional[str] = None):
 
 
 def block_execution():
-    # need to have a way toblock execution because
+    # need to have a way to block execution because
     # the effect's duration and its interruption
     # is handled from 'outside'
     time.sleep(10**6)
