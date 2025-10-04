@@ -1,10 +1,11 @@
+import time
+
 import board
 import neopixel
-import time
 import numpy as np
 
-from christmas_tree.common.utils import load_coordinates, effect, mix, decayed_color, random_color
 from christmas_tree.common.effects.spiral import spiral
+from christmas_tree.common.utils import load_coordinates
 
 pixels = neopixel.NeoPixel(board.D21, 500, auto_write=False, pixel_order=neopixel.RGB, brightness=0.2)
 

@@ -16,8 +16,8 @@ def simple_blinking(pixels, coords):
         weight_sin = np.clip(np.sin(w * (t - np.pi / (2 * w))), 0, 1)
         weight_cos = np.clip(np.cos(w * t), 0, 1)
 
-        color_sin = tuple(map(lambda c: int(weight_sin * c),  color))
-        color_cos = tuple(map(lambda c: int(weight_cos * c),  color))
+        color_sin = tuple(map(lambda c: int(weight_sin * c), color))
+        color_cos = tuple(map(lambda c: int(weight_cos * c), color))
 
         for i in coords:
             if i % 2 == 0:

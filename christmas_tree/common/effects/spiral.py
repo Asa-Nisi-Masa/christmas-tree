@@ -1,7 +1,9 @@
-
 import time
+
 import numpy as np
-from christmas_tree.common.utils import effect, decayed_color, random_color
+
+from christmas_tree.common.utils import decayed_color, effect, random_color
+
 
 @effect(name="Spiral")
 def spiral(pixels, coords):
@@ -13,18 +15,20 @@ def spiral(pixels, coords):
 
     vec = np.random.uniform(-1, 1, 2)
     vec = vec / np.linalg.norm(vec)
-    R = np.array([
-        [np.cos(theta), -np.sin(theta)],
-        [np.sin(theta), np.cos(theta)],
-    ])
+    R = np.array(
+        [
+            [np.cos(theta), -np.sin(theta)],
+            [np.sin(theta), np.cos(theta)],
+        ]
+    )
 
     start = time.time()
     while True:
         t = time.time() - start
 
-        height = 0.5*np.sin(1*t) - 0.1
+        height = 0.5 * np.sin(1 * t) - 0.1
         vec = R.dot(vec) / np.linalg.norm(vec)
-        vec = radius*vec
+        vec = radius * vec
         for i in coords:
             x, y, z = coords[i]
             v = np.array([x, y, z])

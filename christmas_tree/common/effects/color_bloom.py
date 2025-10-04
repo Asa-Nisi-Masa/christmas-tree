@@ -1,6 +1,7 @@
-
 import time
+
 import numpy as np
+
 from christmas_tree.common.utils import decayed_color, effect, random_color
 
 

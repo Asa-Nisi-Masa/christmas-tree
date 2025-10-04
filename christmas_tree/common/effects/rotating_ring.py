@@ -1,5 +1,7 @@
 import time
+
 import numpy as np
+
 from christmas_tree.common.utils import effect, random_color
 
 
@@ -17,25 +19,31 @@ def rotating_ring(pixels, coords):
     axis = axis / np.linalg.norm(axis)
 
     def Rx(theta):
-        return np.array([
-            [1, 0, 0],
-            [0, np.cos(theta), -np.sin(theta)],
-            [0, np.sin(theta), np.cos(theta)],
-        ])
+        return np.array(
+            [
+                [1, 0, 0],
+                [0, np.cos(theta), -np.sin(theta)],
+                [0, np.sin(theta), np.cos(theta)],
+            ]
+        )
 
     def Ry(theta):
-        return np.array([
-            [np.cos(theta), 0, -np.sin(theta)],
-            [0, 1, 0],
-            [np.sin(theta), 0, np.cos(theta)],
-        ])
+        return np.array(
+            [
+                [np.cos(theta), 0, -np.sin(theta)],
+                [0, 1, 0],
+                [np.sin(theta), 0, np.cos(theta)],
+            ]
+        )
 
     def Rz(theta):
-        return np.array([
-            [np.cos(theta), -np.sin(theta), 0],
-            [np.sin(theta), np.cos(theta), 0],
-            [0, 0, 1],
-        ])
+        return np.array(
+            [
+                [np.cos(theta), -np.sin(theta), 0],
+                [np.sin(theta), np.cos(theta), 0],
+                [0, 0, 1],
+            ]
+        )
 
     rx = Rx(theta)
     ry = Ry(theta)

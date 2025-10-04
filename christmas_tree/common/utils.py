@@ -3,8 +3,8 @@ import signal
 import time
 from functools import wraps
 from typing import Callable, Dict, Optional, Tuple
-import numpy as np
 
+import numpy as np
 import psutil
 
 
@@ -13,14 +13,16 @@ def decayed_color(color: Tuple[int], decay: float) -> Tuple[int]:
 
 
 def random_color() -> Tuple[int]:
-    return tuple([
-        np.random.randint(0, 256),
-        np.random.randint(0, 256),
-        # assigning 'blue' component a lower value
-        # otherwise, at least in my case, there is a visual
-        # bias towards whiteish-blueish colors
-        np.random.randint(0, 128),
-    ])
+    return tuple(
+        [
+            np.random.randint(0, 256),
+            np.random.randint(0, 256),
+            # assigning 'blue' component a lower value
+            # otherwise, at least in my case, there is a visual
+            # bias towards whiteish-blueish colors
+            np.random.randint(0, 128),
+        ]
+    )
 
 
 def mix(color1: Tuple[int], color2: Tuple[int], u: float) -> Tuple[int]:

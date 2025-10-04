@@ -5,8 +5,8 @@ from typing import List
 import numpy as np
 
 from christmas_tree.common import effect_registry
-from christmas_tree.common.utils import kill_child_processes
 from christmas_tree.common.settings import EFFECT_DURATION_SECONDS
+from christmas_tree.common.utils import kill_child_processes
 
 
 class LightShow:
