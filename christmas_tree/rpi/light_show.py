@@ -6,6 +6,7 @@ import numpy as np
 
 from christmas_tree.common import effect_registry
 from christmas_tree.common.utils import kill_child_processes
+from christmas_tree.common.settings import EFFECT_DURATION_SECONDS
 
 
 class LightShow:
@@ -25,7 +26,7 @@ class LightShow:
         elif len(effect_names) == 1:
             duration = float("inf")
         else:
-            duration = 20
+            duration = EFFECT_DURATION_SECONDS
 
         parent_process = multiprocessing.Process(
             target=self._run_in_separate_proc, args=(effect_names, duration)

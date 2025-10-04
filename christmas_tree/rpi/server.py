@@ -5,11 +5,11 @@ import neopixel
 from flask import Flask, jsonify, render_template, request
 
 from christmas_tree.common import effect_registry
-from christmas_tree.common.settings import PATH_SAVE, TOTAL_LEDS
+from christmas_tree.common.settings import PATH_SAVE, TOTAL_LEDS, GPIO_PIN, PIXEL_BRIGHTNESS
 from christmas_tree.common.utils import load_coordinates
 from christmas_tree.rpi.light_show import LightShow
 
-pixels = neopixel.NeoPixel(board.D21, TOTAL_LEDS, auto_write=False, pixel_order=neopixel.RGB, brightness=0.5)
+pixels = neopixel.NeoPixel(getattr(board, GPIO_PIN), TOTAL_LEDS, auto_write=False, pixel_order=neopixel.RGB, brightness=PIXEL_BRIGHTNESS)
 
 pixels.fill((0, 0, 0))
 pixels.show()
